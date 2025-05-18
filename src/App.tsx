@@ -1,0 +1,192 @@
+import { useEffect, useState } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
+
+import Loader from './common/Loader';
+import PageTitle from './components/PageTitle';
+import Home from './pages/Home/Home';
+import LoginPage from './pages/Authentication/Login';
+import UserTypeSelectionPage from './pages/Authentication/UserTypeSelectionPage';
+import CitizenSignUp from './pages/Authentication/CitizenSignUp';
+import OfficerSignUp from './pages/Authentication/OfficerSignUp';
+
+// Admin Dashboard Imports
+import AdminLayout from './layout/AdminLayout';
+import AdminHome from './pages/AdminDashboard/AdminHome';
+import DashboardHome from './pages/AdminDashboard/DashboardHome';
+import Complaints from './pages/AdminDashboard/Complaints';
+import ComplaintDetailPage from './pages/AdminDashboard/ComplaintDetailPage';
+import Agents from './pages/AdminDashboard/Agents';
+import AgentDetailPage from './pages/AdminDashboard/AgentDetailPage';
+import Cities from './pages/AdminDashboard/Cities';
+import AddAgent from './pages/AdminDashboard/AddAgent';
+
+// User Dashboard Imports
+import UserLayout from './layout/UserLayout';
+import UserDashboardHome from './pages/UserDashboard/UserDashboardHome';
+
+function App() {
+  const [loading, setLoading] = useState<boolean>(true);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
+
+  return loading ? (
+    <Loader />
+  ) : (
+    <Routes>
+      {/* Public Pages */}
+      <Route
+        index
+        element={
+          <>
+            <PageTitle title="Home | Mass Reporting App" />
+            <Home />
+          </>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <>
+            <PageTitle title="Login | Mass Reporting App" />
+            <LoginPage />
+          </>
+        }
+      />
+      <Route
+        path="/select-user-type"
+        element={
+          <>
+            <PageTitle title="Select User Type | Mass Reporting App" />
+            <UserTypeSelectionPage />
+          </>
+        }
+      />
+      <Route
+        path="/signup/citizen"
+        element={
+          <>
+            <PageTitle title="Citizen Sign Up | Mass Reporting App" />
+            <CitizenSignUp />
+          </>
+        }
+      />
+      <Route
+        path="/signup/officer"
+        element={
+          <>
+            <PageTitle title="Officer Sign Up | Mass Reporting App" />
+            <OfficerSignUp />
+          </>
+        }
+      />
+
+      {/* Admin Dashboard Routes */}
+      <Route
+      path="admin/home"
+      element={
+        <>
+        <PageTitle title="Admin Home | Mass Reporting App" />
+        <AdminHome />
+        </>
+        }
+      />
+      <Route
+        path="/admin/*"
+        element={
+          <AdminLayout>
+            <Routes>
+              <Route
+                path="dashboard"
+                element={
+                  <>
+                    <PageTitle title="Admin Dashboard | Mass Reporting App" />
+                    <DashboardHome />
+                  </>
+                }
+              />
+              <Route
+                path="complaints"
+                element={
+                  <>
+                    <PageTitle title="Admin Complaints | Mass Reporting App" />
+                    <Complaints />
+                  </>
+                }
+              />
+              <Route path="complaints/:id" element={<ComplaintDetailPage />} />
+              <Route
+                path="agents"
+                element={
+                  <>
+                    <PageTitle title="Admin Agents | Mass Reporting App" />
+                    <Agents />
+                  </>
+                }
+              />
+              <Route
+                path="agents/:id"
+                element={
+                  <>
+                    <PageTitle title="Inspector Details | Mass Reporting App" />
+                    <AgentDetailPage />
+                  </>
+                }
+              />
+              <Route
+                path="agents/add-agent"
+                element={
+                  <>
+                    <PageTitle title="Admin Add Agent | Mass Reporting App" />
+                    <AddAgent />
+                  </>
+                }
+              />
+              <Route
+                path="cities"
+                element={
+                  <>
+                    <PageTitle title="Admin Cities | Mass Reporting App" />
+                    <Cities />
+                  </>
+                }
+              />
+            </Routes>
+          </AdminLayout>
+        }
+      />
+
+
+      {/* User Dashboard */}
+      <Route
+        path="/user/*"
+        element={
+          <UserLayout>
+            <Routes>
+              <Route
+                path="dashboard"
+                element={
+                  <>
+                    <PageTitle title="User Dashboard | Mass Reporting App" />
+                    <UserDashboardHome />
+                  </>
+                }
+              />
+            </Routes>
+          </UserLayout>
+        }
+      />
+
+      {/* Traffic Police Dashboard */}
+
+    </Routes>
+  );
+}
+
+export default App;
