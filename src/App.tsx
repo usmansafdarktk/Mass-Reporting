@@ -19,10 +19,17 @@ import Agents from './pages/AdminDashboard/Agents';
 import AgentDetailPage from './pages/AdminDashboard/AgentDetailPage';
 import Cities from './pages/AdminDashboard/Cities';
 import AddAgent from './pages/AdminDashboard/AddAgent';
+import ReportViolation from './pages/UserDashboard/ReportViolation';
 
 // User Dashboard Imports
 import UserLayout from './layout/UserLayout';
-import UserDashboardHome from './pages/UserDashboard/UserDashboardHome';
+import MyReports from './pages/UserDashboard/MyReports';
+import EditReport from './pages/UserDashboard/EditReport';
+import UserProfile from './pages/UserDashboard/UserProfile';
+import ChatbotPage from './pages/UserDashboard/ChatbotPage';
+import Leaderboard from './pages/UserDashboard/Leaderboard';
+import HelpPage from './pages/UserDashboard/HelpPage';
+import Settings from "./pages/UserDashboard/SettingsPage";
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -170,11 +177,66 @@ function App() {
           <UserLayout>
             <Routes>
               <Route
-                path="dashboard"
+                path="report-violation"
                 element={
                   <>
-                    <PageTitle title="User Dashboard | Mass Reporting App" />
-                    <UserDashboardHome />
+                    <PageTitle title="User Report Violations | Mass Reporting App" />
+                    <ReportViolation />
+                  </>
+                }
+              />
+              <Route
+                path="my-reports"
+                element={
+                  <>
+                    <PageTitle title="User My Reports | Mass Reporting App" />
+                    <MyReports />
+                  </>
+                }
+              />
+              <Route path="reports/:id/edit" element={<EditReport />} />
+              <Route
+                path="user-profile"
+                element={
+                  <>
+                    <PageTitle title="User Profile | Mass Reporting App" />
+                    <UserProfile />
+                  </>
+                }
+              />
+              <Route
+                path="ai-assistant"
+                element={
+                  <>
+                    <PageTitle title="User AI Assistant | Mass Reporting App" />
+                    <ChatbotPage />
+                  </>
+                }
+              />
+              <Route
+                path="leaderboard"
+                element={
+                  <>
+                    <PageTitle title="User Leaderboard | Mass Reporting App" />
+                    <Leaderboard />
+                  </>
+                }
+              />
+              <Route
+                path="help"
+                element={
+                  <>
+                    <PageTitle title="User Help and Guidelines | Mass Reporting App" />
+                    <HelpPage />
+                  </>
+                }
+              />
+              <Route
+                path="settings"
+                element={
+                  <>
+                    <PageTitle title="User Settings | Mass Reporting App" />
+                    <Settings />
                   </>
                 }
               />

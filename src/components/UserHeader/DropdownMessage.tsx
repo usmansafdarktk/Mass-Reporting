@@ -78,10 +78,10 @@ const DropdownMessage = () => {
 
                   <div>
                     <h6 className="text-sm font-medium text-black dark:text-white">
-                      Mariya Desoja
+                      Ayesha Khan
                     </h6>
-                    <p className="text-sm">I like your confidence 💪</p>
-                    <p className="text-xs">2min ago</p>
+                    <p className="text-sm">New complaint assigned: illegal parking in Lahore.</p>
+                    <p className="text-xs">Just now</p>
                   </div>
                 </Link>
               </li>
@@ -96,10 +96,10 @@ const DropdownMessage = () => {
 
                   <div>
                     <h6 className="text-sm font-medium text-black dark:text-white">
-                      Robert Jhon
+                      Usman Raza
                     </h6>
-                    <p className="text-sm">Can you share your offer?</p>
-                    <p className="text-xs">10min ago</p>
+                    <p className="text-sm">Video evidence has been uploaded for case #2231.</p>
+                    <p className="text-xs">8 min ago</p>
                   </div>
                 </Link>
               </li>
@@ -114,10 +114,10 @@ const DropdownMessage = () => {
 
                   <div>
                     <h6 className="text-sm font-medium text-black dark:text-white">
-                      Henry Dholi
+                      Fatima Tariq
                     </h6>
-                    <p className="text-sm">I cam across your profile and...</p>
-                    <p className="text-xs">1day ago</p>
+                    <p className="text-sm">Complaint #1219 marked as resolved.</p>
+                    <p className="text-xs">1 hour ago</p>
                   </div>
                 </Link>
               </li>
@@ -132,10 +132,10 @@ const DropdownMessage = () => {
 
                   <div>
                     <h6 className="text-sm font-medium text-black dark:text-white">
-                      Cody Fisher
+                      Ahmed Nawaz
                     </h6>
-                    <p className="text-sm">I’m waiting for you response!</p>
-                    <p className="text-xs">5days ago</p>
+                    <p className="text-sm">AI review pending for complaint #3178.</p>
+                    <p className="text-xs">Today</p>
                   </div>
                 </Link>
               </li>
@@ -150,14 +150,15 @@ const DropdownMessage = () => {
 
                   <div>
                     <h6 className="text-sm font-medium text-black dark:text-white">
-                      Mariya Desoja
+                      Ayesha Khan
                     </h6>
-                    <p className="text-sm">I like your confidence 💪</p>
-                    <p className="text-xs">2min ago</p>
+                    <p className="text-sm">Follow-up requested on complaint #1125.</p>
+                    <p className="text-xs">2 days ago</p>
                   </div>
                 </Link>
               </li>
             </ul>
+
           </div>
         )}
         {/* <!-- Dropdown End --> */}
