@@ -37,6 +37,8 @@ import OfficerLayout from './layout/OfficerLayout';
 import OfficerDashboard from './pages/OfficerDashboard/OfficerDashboard';
 import OfficerReports from './pages/OfficerDashboard/OfficerReports';
 import ReportDetailPage from './pages/OfficerDashboard/ReportDetailPage';
+import OfficerProfile from './pages/OfficerDashboard/OfficerProfile';
+import OfficerSettingsPage from './pages/OfficerDashboard/OfficerSettingsPage';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -287,6 +289,24 @@ function App() {
                   }
                 />
                 <Route path="reports/:id" element={<ReportDetailPage />} />
+                <Route
+                  path="officer-profile"
+                  element={
+                    <>
+                      <PageTitle title="Officer Profile | Mass Reporting App" />
+                      <OfficerProfile />
+                    </>
+                  }
+                />
+                <Route
+                  path="officer-settings"
+                  element={
+                    <>
+                      <PageTitle title="Officer Settings | Mass Reporting App" />
+                      <OfficerSettingsPage />
+                    </>
+                  }
+                />
               </Routes>
             </OfficerLayout>
           }
