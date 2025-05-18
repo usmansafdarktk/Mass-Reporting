@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Report } from "../../components/ReportCard";
+import { FaArrowLeft } from 'react-icons/fa';
 
 const mockReports: Report[] = [
   {
@@ -91,6 +92,12 @@ const EditReport: React.FC = () => {
 
   return (
     <div className="flex flex-col">
+      <button
+              onClick={() => navigate('/user/my-reports')}
+              className="text-lg mb-6 focus:outline-none mx-4"
+            >
+              <FaArrowLeft className="text-2xl text-black dark:text-white hover:opacity-80" />
+      </button>
       <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-transparent px-4">
         <div className="w-full max-w-4xl bg-white dark:bg-[#1e293b] dark:border dark:border-gray-600 p-8 rounded-lg dark:shadow-none shadow-[0px_0px_4px_rgba(24,54,178,1)] text-black dark:text-white">
           <h2 className="text-2xl font-semibold mb-6 text-center">Edit Report</h2>

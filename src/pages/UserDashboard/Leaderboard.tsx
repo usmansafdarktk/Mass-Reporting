@@ -82,7 +82,7 @@ const Leaderboard: React.FC = () => {
       </div>
 
       {/* Table Section */}
-      <div className="px-4 pt-10 pb-4 text-gray-900 dark:text-white">
+      <div className="px-4 pt-6 pb-4 text-gray-900 dark:text-white">
         <div className="max-w-6xl mx-auto bg-white dark:bg-[#1e293b] shadow-lg rounded-xl border dark:border-gray-700 p-6">
           <h2 className="text-xl font-semibold mb-3">Top Contributors Table</h2>
 

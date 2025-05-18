@@ -32,6 +32,12 @@ import Leaderboard from './pages/UserDashboard/Leaderboard';
 import HelpPage from './pages/UserDashboard/HelpPage';
 import Settings from "./pages/UserDashboard/SettingsPage";
 
+// Officer Dashboard Imports
+import OfficerLayout from './layout/OfficerLayout';
+import OfficerDashboard from './pages/OfficerDashboard/OfficerDashboard';
+import OfficerReports from './pages/OfficerDashboard/OfficerReports';
+import ReportDetailPage from './pages/OfficerDashboard/ReportDetailPage';
+
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
@@ -256,6 +262,35 @@ function App() {
       />
 
       {/* Traffic Police Dashboard */}
+        {/* Officer Dashboard */}
+        <Route
+          path="/officer/*"
+          element={
+            <OfficerLayout>
+              <Routes>
+                <Route
+                  path="dashboard"
+                  element={
+                    <>
+                      <PageTitle title="Officer Dashboard | Mass Reporting App" />
+                      <OfficerDashboard />
+                    </>
+                  }
+                />
+                <Route
+                  path="reports"
+                  element={
+                    <>
+                      <PageTitle title="Officer Reports | Mass Reporting App" />
+                      <OfficerReports />
+                    </>
+                  }
+                />
+                <Route path="reports/:id" element={<ReportDetailPage />} />
+              </Routes>
+            </OfficerLayout>
+          }
+        />
 
     </Routes>
   );
