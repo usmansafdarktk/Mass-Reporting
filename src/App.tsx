@@ -23,6 +23,7 @@ import ReportViolation from './pages/UserDashboard/ReportViolation';
 
 // User Dashboard Imports
 import UserLayout from './layout/UserLayout';
+import UserDashboard from './pages/UserDashboard/UserDashboard';
 import MyReports from './pages/UserDashboard/MyReports';
 import EditReport from './pages/UserDashboard/EditReport';
 import UserProfile from './pages/UserDashboard/UserProfile';
@@ -176,6 +177,15 @@ function App() {
         element={
           <UserLayout>
             <Routes>
+              <Route
+                path="dashboard"
+                element={
+                  <>
+                    <PageTitle title="User Dashboard | Mass Reporting App" />
+                    <UserDashboard />
+                  </>
+                }
+              />
               <Route
                 path="report-violation"
                 element={
