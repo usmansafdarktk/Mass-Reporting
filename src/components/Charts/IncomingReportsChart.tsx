@@ -12,7 +12,7 @@ const IncomingReportsChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-slate-800 p-4 rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.45)]">
+    <div className="bg-gray-50 dark:bg-slate-800 p-4 rounded-lg border border-gray-300 dark:border-gray-500 shadow-md">
       <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Daily Incoming Reports</h3>
       <ReactApexChart options={data.options} series={data.series} type="bar" height={280} />
     </div>
