@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from 'react-icons/fa';
+import { submitViolationReport } from "../../utils/reporting";
+import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 
 const ReportViolation: React.FC = () => {
 
@@ -33,10 +35,22 @@ const ReportViolation: React.FC = () => {
     setLoading(true);
     setMessage("");
 
-    // Placeholder logic for form submission
-    console.log("Submitting Violation Report:", formData);
+    try {
+      let mediaUrl = "";
 
-    setTimeout(() => {
+      if (formData.media) {
+        mediaUrl = await uploadToCloudinary(formData.media);
+      }
+
+      await submitViolationReport({
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        dateTime: formData.dateTime,
+        location: formData.location,
+        mediaUrl,
+      });
+
       setMessage("Violation report submitted successfully!");
       setFormData({
         title: "",
@@ -46,8 +60,12 @@ const ReportViolation: React.FC = () => {
         location: "",
         media: null,
       });
-      setLoading(false);
-    }, 1000);
+    } catch (error: any) {
+      console.error("Error submitting violation report:", error.message);
+      setMessage("Failed to submit report. Please try again.");
+    }
+
+    setLoading(false);
   };
 
   return (
