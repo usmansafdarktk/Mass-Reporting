@@ -20,6 +20,7 @@ import AgentDetailPage from './pages/AdminDashboard/AgentDetailPage';
 import Cities from './pages/AdminDashboard/Cities';
 import AddAgent from './pages/AdminDashboard/AddAgent';
 import ReportViolation from './pages/UserDashboard/ReportViolation';
+import ModelMarketplace from './pages/AdminDashboard/ModelMarketplace';
 
 // User Dashboard Imports
 import UserLayout from './layout/UserLayout';
@@ -171,6 +172,15 @@ function App() {
                   <>
                     <PageTitle title="Admin Cities | Mass Reporting App" />
                     <Cities />
+                  </>
+                }
+              />
+              <Route
+                path="model-marketplace"
+                element={
+                  <>
+                    <PageTitle title="Admin Model Marketplace | Mass Reporting App" />
+                    <ModelMarketplace />
                   </>
                 }
               />
