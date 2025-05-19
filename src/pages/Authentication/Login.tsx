@@ -35,27 +35,38 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const { email, password } = formData;
-  
+
     setLoading(true);
     setError(null);
-  
+
     try {
-      // Check for admin credentials
+      // Admin hardcoded login
       if (email === "admin@usman.com" && password === "admin123") {
-        navigate("/dashboard"); // Admin dashboard
+        navigate("/dashboard");
         return;
       }
-  
-      // Proceed with normal login for other users
-      await signInUser(email, password);
-      navigate("/userdashboard"); // User dashboard
+
+      // Sign in user and get role from Firestore
+      const userInfo = await signInUser(email, password);
+
+      if (!userInfo) {
+        throw new Error("User info could not be retrieved.");
+      }
+
+      // Route based on role
+      if (userInfo.role === "Citizen") {
+        navigate("/user/dashboard");
+      } else if (userInfo.role === "Officer") {
+        navigate("/officer/dashboard");
+      } else {
+        throw new Error("Unrecognized user role.");
+      }
     } catch (err: any) {
       setError(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="flex flex-col justify-center items-center h-screen w-screen bg-white text-black">

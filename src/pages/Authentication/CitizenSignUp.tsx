@@ -45,7 +45,7 @@ const CitizenSignUp: React.FC = () => {
         'Citizen',
         ''
       );
-      navigate('/requestpending');
+      navigate('/login');
     } catch (err: any) {
       alert(`Error: ${err.message}`);
     }

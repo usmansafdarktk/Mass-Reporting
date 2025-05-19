@@ -51,11 +51,11 @@ const OfficerSignUp: React.FC = () => {
         formData.password,
         formData.password,
         formData.phoneNumber,
-        formData.role,
-        formData.organization
-        // You can modify the backend call to include CNIC if needed
+        "Officer",                  
+        formData.organization,
+        formData.role            
       );
-      navigate('/requestpending');
+      navigate('/login');
     } catch (err: any) {
       alert(`Error: ${err.message}`);
     }
