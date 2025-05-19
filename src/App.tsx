@@ -39,6 +39,7 @@ import OfficerReports from './pages/OfficerDashboard/OfficerReports';
 import ReportDetailPage from './pages/OfficerDashboard/ReportDetailPage';
 import OfficerProfile from './pages/OfficerDashboard/OfficerProfile';
 import OfficerSettingsPage from './pages/OfficerDashboard/OfficerSettingsPage';
+import UnassignedReports from './pages/OfficerDashboard/UnassignedReports';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -304,6 +305,15 @@ function App() {
                     <>
                       <PageTitle title="Officer Settings | Mass Reporting App" />
                       <OfficerSettingsPage />
+                    </>
+                  }
+                />
+                <Route
+                  path="unassigned-reports"
+                  element={
+                    <>
+                      <PageTitle title="Officer Unassigned Reports | Mass Reporting App" />
+                      <UnassignedReports />
                     </>
                   }
                 />
