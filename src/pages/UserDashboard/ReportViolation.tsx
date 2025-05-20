@@ -20,7 +20,7 @@ const ReportViolation: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -60,6 +60,9 @@ const ReportViolation: React.FC = () => {
         location: "",
         media: null,
       });
+
+      navigate("/user/my-reports");
+      
     } catch (error: any) {
       console.error("Error submitting violation report:", error.message);
       setMessage("Failed to submit report. Please try again.");
@@ -99,16 +102,23 @@ const ReportViolation: React.FC = () => {
               </div>
               <div className="w-full">
                 <label htmlFor="category" className="block text-sm font-medium">Category</label>
-                <input
-                  type="text"
+                <select
                   id="category"
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  placeholder="e.g. Speeding, Red Light"
-                  className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
                   required
-                />
+                  className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                >
+                  <option value="" disabled>Select a category</option>
+                  <option value="Speeding">Speeding</option>
+                  <option value="Signal Violation">Signal Violation</option>
+                  <option value="Wrong Parking">Wrong Parking</option>
+                  <option value="Illegal U-Turn">Illegal U-Turn</option>
+                  <option value="Driving on Wrong Lane">Driving on Wrong Lane</option>
+                  <option value="No Helmet">No Helmet</option>
+                  <option value="Reckless Driving">Reckless Driving</option>
+                </select>
               </div>
             </div>
 

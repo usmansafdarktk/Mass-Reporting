@@ -1,46 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
+import { getReportById, updateViolationReport } from "../../utils/reporting";
+import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 import { Report } from "../../components/ReportCard";
-import { FaArrowLeft } from 'react-icons/fa';
-
-const mockReports: Report[] = [
-  {
-    id: "1",
-    title: "Speeding in school zone",
-    category: "Speeding",
-    location: "Main Blvd, Lahore",
-    date: "2024-12-10",
-    status: "Pending",
-    imagePath: "/images/complaint1.jpg",
-  },
-  {
-    id: "2",
-    title: "Illegal Parking",
-    category: "Wrong Parking",
-    location: "F-8 Markaz, Islamabad",
-    date: "2024-12-08",
-    status: "Under Review",
-    imagePath: "/images/complaint2.jpg",
-  },
-  {
-    id: "3",
-    title: "Blocking Intersection",
-    category: "Obstruction",
-    location: "Shahrah-e-Faisal, Karachi",
-    date: "2024-12-05",
-    status: "Verified",
-    imagePath: "/images/complaint3.jpg",
-  },
-];
 
 const EditReport: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const reportToEdit = mockReports.find((r) => r.id === id);
-
+  const [reportToEdit, setReportToEdit] = useState<Report | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
+    description: "",
     category: "",
     location: "",
     date: "",
@@ -48,18 +22,31 @@ const EditReport: React.FC = () => {
   });
 
   useEffect(() => {
-    if (reportToEdit) {
-      setFormData((prev) => ({
-        ...prev,
-        title: reportToEdit.title,
-        category: reportToEdit.category,
-        location: reportToEdit.location,
-        date: reportToEdit.date,
-      }));
-    }
-  }, [reportToEdit]);
+    const fetchReport = async () => {
+      try {
+        if (id) {
+          const report = await getReportById(id);
+          setReportToEdit(report);
+          setFormData({
+            title: report.title,
+            description: report.description || "",
+            category: report.category,
+            location: report.location,
+            date: report.date,
+            media: null,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching report:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    fetchReport();
+  }, [id]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -75,16 +62,39 @@ const EditReport: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedReport = {
-      ...reportToEdit,
-      ...formData,
-      imagePath: formData.media ? URL.createObjectURL(formData.media) : reportToEdit?.imagePath,
-    };
-    console.log("Updated Report:", updatedReport);
-    navigate("/user/reports");
+    if (!reportToEdit || !id) return;
+
+    try {
+      setSubmitting(true);
+      let mediaUrl = reportToEdit.imagePath;
+
+      if (formData.media) {
+        mediaUrl = await uploadToCloudinary(formData.media);
+      }
+
+      await updateViolationReport(id, {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        location: formData.location,
+        dateTime: formData.date,
+        mediaUrl,
+      });
+
+      navigate("/user/my-reports");
+    } catch (error: any) {
+      console.error("Error updating report:", error.message);
+      alert("Failed to update report. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loading) {
+    return <div className="text-center mt-20 text-blue-600">Loading...</div>;
+  }
 
   if (!reportToEdit) {
     return <div className="text-center mt-20 text-red-600">Report not found.</div>;
@@ -93,10 +103,10 @@ const EditReport: React.FC = () => {
   return (
     <div className="flex flex-col">
       <button
-              onClick={() => navigate('/user/my-reports')}
-              className="text-lg mb-6 focus:outline-none mx-4"
-            >
-              <FaArrowLeft className="text-2xl text-black dark:text-white hover:opacity-80" />
+        onClick={() => navigate("/user/my-reports")}
+        className="text-lg mb-6 focus:outline-none mx-4"
+      >
+        <FaArrowLeft className="text-2xl text-black dark:text-white hover:opacity-80" />
       </button>
       <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-transparent px-4">
         <div className="w-full max-w-4xl bg-white dark:bg-[#1e293b] dark:border dark:border-gray-600 p-8 rounded-lg dark:shadow-none shadow-[0px_0px_4px_rgba(24,54,178,1)] text-black dark:text-white">
@@ -112,7 +122,21 @@ const EditReport: React.FC = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white"
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium">Description</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                rows={4}
+                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white"
                 required
               />
             </div>
@@ -125,13 +149,17 @@ const EditReport: React.FC = () => {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white"
                 required
               >
-                <option value="">Select category</option>
+                <option value="" disabled>Select a category</option>
                 <option value="Speeding">Speeding</option>
+                <option value="Signal Violation">Signal Violation</option>
                 <option value="Wrong Parking">Wrong Parking</option>
-                <option value="Obstruction">Obstruction</option>
+                <option value="Illegal U-Turn">Illegal U-Turn</option>
+                <option value="Driving on Wrong Lane">Driving on Wrong Lane</option>
+                <option value="No Helmet">No Helmet</option>
+                <option value="Reckless Driving">Reckless Driving</option>
               </select>
             </div>
 
@@ -144,7 +172,7 @@ const EditReport: React.FC = () => {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white"
                 required
               />
             </div>
@@ -158,7 +186,7 @@ const EditReport: React.FC = () => {
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white"
                 required
               />
             </div>
@@ -173,15 +201,13 @@ const EditReport: React.FC = () => {
                 onChange={handleFileChange}
                 className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-white hover:file:bg-blue-100"
               />
-              {/* Current media preview */}
-              {reportToEdit.imagePath && (
+              {reportToEdit.imagePath && !formData.media && (
                 <img
                   src={reportToEdit.imagePath}
                   alt="Current"
                   className="mt-4 rounded-md w-full h-52 object-cover"
                 />
               )}
-              {/* New media preview */}
               {formData.media && (
                 <div className="mt-4 text-sm text-gray-600 dark:text-gray-300">
                   New file selected: {formData.media.name}
@@ -189,12 +215,13 @@ const EditReport: React.FC = () => {
               )}
             </div>
 
-            {/* Submit */}
+            {/* Submit Button */}
             <button
               type="submit"
               className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-all"
+              disabled={submitting}
             >
-              Save Changes
+              {submitting ? "Saving..." : "Save Changes"}
             </button>
           </form>
         </div>
