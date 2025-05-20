@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { addAgent } from "../../utils/agent";
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,25 +40,7 @@ const AddAgent: React.FC = () => {
     setLoading(true);
     setMessage("");
 
-    const result = await addAgent(formData);
-
-    if (result.success) {
-      setMessage("Agent added successfully!");
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        cnic: "",
-        agentId: "",
-        designation: "",
-        department: "",
-        profilePicture: null,
-      });
-    } else {
-      setMessage(`Error: ${result.message}`);
-    }
-
-    setLoading(false);
+    // to be implemented
   };
 
   return (

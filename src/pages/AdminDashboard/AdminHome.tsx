@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import logo from "/images/logo.png";
+import { useAdminAuth } from "../../context/AdminAuthContext";
 
 const AdminHome: React.FC = () => {
   const navigate = useNavigate();
+
+  const { login } = useAdminAuth();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -21,8 +24,22 @@ const AdminHome: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // TODO: Handle admin login here
-    console.log("Submitted:", formData);
+
+    const validUsername = import.meta.env.VITE_ADMIN_USERNAME;
+    console.log(validUsername)
+    const validPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+    console.log(validPassword)
+
+    if (
+      formData.username === validUsername &&
+      formData.password === validPassword
+    ) {
+      login();
+      navigate("/admin/dashboard");
+    } else {
+      alert("Invalid credentials");
+    }
+
     setLoading(false);
   };
 

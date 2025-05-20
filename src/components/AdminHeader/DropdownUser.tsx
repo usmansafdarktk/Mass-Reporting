@@ -2,14 +2,20 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/admin-profile-picture.png';
+import { useAdminAuth } from '../../context/AdminAuthContext';
+
 
 const DropdownUser = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { logout } = useAdminAuth();
 
   const handleLogout = () => {
-    navigate('/login');
+    logout(); // sets isAdmin to false
+    navigate('/admin/home'); // redirects to login page
   };
+
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">

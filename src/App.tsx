@@ -22,6 +22,9 @@ import AddAgent from './pages/AdminDashboard/AddAgent';
 import ReportViolation from './pages/UserDashboard/ReportViolation';
 import ModelMarketplace from './pages/AdminDashboard/ModelMarketplace';
 
+import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
+
+
 // User Dashboard Imports
 import UserLayout from './layout/UserLayout';
 import UserDashboard from './pages/UserDashboard/UserDashboard';
@@ -105,89 +108,111 @@ function App() {
         }
       />
 
-      {/* Admin Dashboard Routes */}
+      {/* Admin Dashboard */}
       <Route
-      path="admin/home"
-      element={
-        <>
-        <PageTitle title="Admin Home | Mass Reporting App" />
-        <AdminHome />
-        </>
-        }
-      />
-      <Route
-        path="/admin/*"
-        element={
-          <AdminLayout>
-            <Routes>
-              <Route
-                path="dashboard"
-                element={
-                  <>
-                    <PageTitle title="Admin Dashboard | Mass Reporting App" />
-                    <DashboardHome />
-                  </>
-                }
-              />
-              <Route
-                path="complaints"
-                element={
-                  <>
-                    <PageTitle title="Admin Complaints | Mass Reporting App" />
-                    <Complaints />
-                  </>
-                }
-              />
-              <Route path="complaints/:id" element={<ComplaintDetailPage />} />
-              <Route
-                path="agents"
-                element={
-                  <>
-                    <PageTitle title="Admin Agents | Mass Reporting App" />
-                    <Agents />
-                  </>
-                }
-              />
-              <Route
-                path="agents/:id"
-                element={
-                  <>
-                    <PageTitle title="Inspector Details | Mass Reporting App" />
-                    <AgentDetailPage />
-                  </>
-                }
-              />
-              <Route
-                path="agents/add-agent"
-                element={
-                  <>
-                    <PageTitle title="Admin Add Agent | Mass Reporting App" />
-                    <AddAgent />
-                  </>
-                }
-              />
-              <Route
-                path="cities"
-                element={
-                  <>
-                    <PageTitle title="Admin Cities | Mass Reporting App" />
-                    <Cities />
-                  </>
-                }
-              />
-              <Route
-                path="model-marketplace"
-                element={
-                  <>
-                    <PageTitle title="Admin Model Marketplace | Mass Reporting App" />
-                    <ModelMarketplace />
-                  </>
-                }
-              />
-            </Routes>
-          </AdminLayout>
-        }
-      />
+          path="/admin/home"
+          element={
+            <>
+              <PageTitle title="Admin Home | Mass Reporting App" />
+              <AdminHome />
+            </>
+          }
+        />
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout>
+                <PageTitle title="Admin Dashboard | Mass Reporting App" />
+                <DashboardHome />
+              </AdminLayout>
+            </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/complaints"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout>
+                <PageTitle title="Admin Complaints | Mass Reporting App" />
+                <Complaints />
+              </AdminLayout>
+            </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/complaints/:id"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout>
+                <ComplaintDetailPage />
+              </AdminLayout>
+            </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/agents"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout>
+                <PageTitle title="Admin Agents | Mass Reporting App" />
+                <Agents />
+              </AdminLayout>
+            </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/agents/:id"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout>
+                <PageTitle title="Inspector Details | Mass Reporting App" />
+                <AgentDetailPage />
+              </AdminLayout>
+            </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/agents/add-agent"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout>
+                <PageTitle title="Admin Add Agent | Mass Reporting App" />
+                <AddAgent />
+              </AdminLayout>
+            </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/cities"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout>
+                <PageTitle title="Admin Cities | Mass Reporting App" />
+                <Cities />
+              </AdminLayout>
+            </ProtectedAdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/model-marketplace"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout>
+                <PageTitle title="Admin Model Marketplace | Mass Reporting App" />
+                <ModelMarketplace />
+              </AdminLayout>
+            </ProtectedAdminRoute>
+          }
+        />
 
 
       {/* User Dashboard */}

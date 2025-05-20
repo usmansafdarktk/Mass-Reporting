@@ -5,11 +5,14 @@ import App from './App';
 import './css/style.css';
 import './css/satoshi.css';
 import 'flatpickr/dist/flatpickr.min.css';
+import { AdminAuthProvider } from "./context/AdminAuthContext";
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Router>
-      <App />
+      <AdminAuthProvider>
+        <App />
+      </AdminAuthProvider>
     </Router>
   </React.StrictMode>,
 );

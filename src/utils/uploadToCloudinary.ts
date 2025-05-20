@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const uploadToCloudinary = async (file: File): Promise<string> => {
-  const cloudName = "dahamqpre";
-  const uploadPreset = "unsigned_preset"; 
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   const url = `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`;
 
