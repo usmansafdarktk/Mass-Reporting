@@ -1,10 +1,43 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
-import UserOne from '../../images/user/user-01.png';
+import defaultUserImage from '/images/user-profile.png';
+import { logoutUser, getOfficerProfile } from '../../utils/userauth';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [profile, setProfile] = useState<{ fullName: string; profileImage: string }>({
+      fullName: '',
+      profileImage: defaultUserImage,
+    });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getOfficerProfile(); 
+        if (data) {
+          setProfile({
+            fullName: data.fullName || 'Officer',
+            profileImage: data.profileImage || defaultUserImage,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to load officer profile:", error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      navigate("/login");
+    } catch (error) {
+      alert("Logout failed. Please try again.");
+    }
+  };
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -15,12 +48,12 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Ahmad Nawaz
+            {profile.fullName}
           </span>
         </span>
 
-        <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
+        <span className="h-12 w-12 rounded-full overflow-hidden">
+          <img src={profile.profileImage} alt="User" className="object-cover h-full w-full" />
         </span>
 
         <svg
@@ -97,7 +130,7 @@ const DropdownUser = () => {
               </Link>
             </li>
           </ul>
-          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          <button onClick={handleLogout} className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
             <svg
               className="fill-current"
               width="22"

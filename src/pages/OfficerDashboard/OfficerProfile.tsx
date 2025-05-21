@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaUser,
@@ -8,34 +8,81 @@ import {
   FaBuilding,
   FaBriefcase,
 } from "react-icons/fa";
+import { logoutUser, getOfficerProfile, updateOfficerProfile } from "../../utils/userauth";
+import { uploadToCloudinary } from "../../utils/uploadToCloudinary";
 
 const OfficerProfile: React.FC = () => {
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState({
-    fullName: "Inspector Zain",
-    email: "zain@traffic.gov.pk",
-    phone: "0301-6547890",
-    cnic: "35201-6543210-9",
-    department: "Traffic Management",
-    role: "Field Officer",
-    organization: "Punjab Traffic Police",
+    fullName: "",
+    email: "",
+    phone: "",
+    cnic: "",
+    department: "",
+    role: "",
+    organization: "",
+    profileImage: "/images/user-profile.png",
   });
 
   const [isEditing, setIsEditing] = useState(false);
+
+  const [newProfileImage, setNewProfileImage] = useState<File | null>(null);
+  
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getOfficerProfile();
+        if (data) setUserInfo((prev) => ({ ...prev, ...data }));
+      } catch (err) {
+        console.error("Error fetching officer profile:", err);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdate = () => {
-    setIsEditing(false);
-    console.log("Updated officer:", userInfo);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNewProfileImage(file);
+      setUserInfo(prev => ({
+        ...prev,
+        profileImage: URL.createObjectURL(file), // preview
+      }));
+    }
   };
 
-  const handleLogout = () => {
-    navigate("/login");
+  const handleUpdate = async () => {
+    try {
+      setLoading(true); 
+      let imageUrl = userInfo.profileImage;
+      if (newProfileImage) {
+        imageUrl = await uploadToCloudinary(newProfileImage);
+      }
+      await updateOfficerProfile({ ...userInfo, profileImage: imageUrl });
+      setUserInfo(prev => ({ ...prev, profileImage: imageUrl }));
+      setIsEditing(false);
+    } catch (err) {
+      alert("Update failed.");
+    } finally {
+    setLoading(false); 
+  }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      navigate("/login");
+    } catch (err) {
+      alert("Logout failed");
+    }
   };
 
   return (
@@ -43,71 +90,39 @@ const OfficerProfile: React.FC = () => {
       <div className="w-full max-w-3xl bg-white dark:bg-[#1e293b] border dark:border-gray-600 p-8 rounded-lg shadow-md text-black dark:text-white">
         <h2 className="text-3xl font-bold mb-8 text-gray-800 dark:text-white">Officer Profile</h2>
 
-        {/* View Mode */}
+        {/* Profile Image */}
+        <div className="flex justify-center mb-6">
+          <img
+            src={userInfo.profileImage || "/images/user-profile.png"}
+            alt="Profile"
+            className="h-28 w-28 rounded-full object-cover border-2 border-blue-600"
+          />
+        </div>
+
+        {/* Overview */}
         {!isEditing && (
           <div className="space-y-4 mb-6">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-md">
-                <FaUser className="text-xl text-gray-800" />
+            {[
+              { icon: <FaUser />, label: "Full Name", value: userInfo.fullName },
+              { icon: <FaEnvelope />, label: "Email", value: userInfo.email },
+              { icon: <FaPhone />, label: "Phone", value: userInfo.phone },
+              { icon: <FaIdCard />, label: "CNIC", value: userInfo.cnic },
+              { icon: <FaBriefcase />, label: "Department", value: userInfo.department },
+              { icon: <FaUser />, label: "Role", value: userInfo.role },
+              { icon: <FaBuilding />, label: "Organization", value: userInfo.organization },
+            ].filter(field => field.value).map(({ icon, label, value }) => (
+              <div key={label} className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-md">
+                {React.cloneElement(icon, { className: "text-xl text-gray-800" })}
                 <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-300">Full Name</p>
-                  <p className="font-semibold">{userInfo.fullName}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-300">{label}</p>
+                  <p className="font-semibold">{value}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-md">
-                <FaEnvelope className="text-xl text-gray-800" />
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-300">Email</p>
-                  <p className="font-semibold">{userInfo.email}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-md">
-                <FaPhone className="text-xl text-gray-800" />
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-300">Phone</p>
-                  <p className="font-semibold">{userInfo.phone}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-md">
-                <FaIdCard className="text-xl text-gray-800" />
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-300">CNIC</p>
-                  <p className="font-semibold">{userInfo.cnic}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-md">
-                <FaBriefcase className="text-xl text-gray-800" />
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-300">Department</p>
-                  <p className="font-semibold">{userInfo.department}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-md">
-                <FaUser className="text-xl text-gray-800" />
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-300">Role</p>
-                  <p className="font-semibold">{userInfo.role}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800 rounded-md">
-              <FaBuilding className="text-xl text-gray-800" />
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-300">Organization</p>
-                <p className="font-semibold">{userInfo.organization}</p>
-              </div>
-            </div>
+            ))}
           </div>
         )}
 
-        {/* Edit Mode */}
+        {/* Edit Form */}
         {isEditing && (
           <form
             onSubmit={(e) => {
@@ -117,31 +132,35 @@ const OfficerProfile: React.FC = () => {
             className="space-y-6 border-t border-gray-300 pt-6 mt-6"
           >
             <h3 className="text-lg font-semibold mb-2">Edit Officer Profile</h3>
+
+            <input
+              type="file"
+              id="profileImage"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="text-sm text-gray-500 dark:text-gray-300"
+            />
+            {newProfileImage && (
+              <p className="text-xs mt-1 text-gray-400">New image selected: {newProfileImage.name}</p>
+            )}
+
             <div className="grid md:grid-cols-2 gap-4">
-              {[
-                { label: "Full Name", name: "fullName", placeholder: "e.g. Inspector Zain" },
-                { label: "Email", name: "email", placeholder: "e.g. zain@traffic.gov.pk" },
-                { label: "Phone", name: "phone", placeholder: "e.g. 0301-6547890" },
-                { label: "CNIC", name: "cnic", placeholder: "e.g. 35201-6543210-9" },
-                { label: "Department", name: "department", placeholder: "e.g. Traffic Management" },
-                { label: "Role", name: "role", placeholder: "e.g. Field Officer" },
-              ].map(({ label, name, placeholder }) => (
-                <div key={name} className="w-full">
-                  <label htmlFor={name} className="block text-sm font-medium mb-1">
-                    {label}
-                  </label>
+              {["fullName", "email", "phone", "cnic", "department", "role"].map((key) => (
+                <div key={key} className="w-full">
+                  <label htmlFor={key} className="block text-sm font-medium mb-1 capitalize">{key}</label>
                   <input
                     type="text"
-                    id={name}
-                    name={name}
-                    value={userInfo[name as keyof typeof userInfo]}
+                    id={key}
+                    name={key}
+                    value={userInfo[key as keyof typeof userInfo]}
                     onChange={handleChange}
-                    placeholder={placeholder}
+                    placeholder={`Enter ${key}`}
                     className="w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-gray-800 focus:outline-none"
                   />
                 </div>
               ))}
             </div>
+
             <div className="w-full">
               <label htmlFor="organization" className="block text-sm font-medium mb-1">Organization</label>
               <input
@@ -150,7 +169,7 @@ const OfficerProfile: React.FC = () => {
                 name="organization"
                 value={userInfo.organization}
                 onChange={handleChange}
-                placeholder="e.g. Punjab Traffic Police"
+                placeholder="Enter organization"
                 className="w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-gray-800 focus:outline-none"
               />
             </div>
@@ -166,8 +185,9 @@ const OfficerProfile: React.FC = () => {
               <button
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded hover:bg-gray-900"
+                disabled={loading}
               >
-                Save Changes
+                {loading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </form>

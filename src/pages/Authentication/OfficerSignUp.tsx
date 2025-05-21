@@ -18,6 +18,8 @@ interface FormData {
 const OfficerSignUp: React.FC = () => {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState<boolean>(false);
+
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -39,6 +41,8 @@ const OfficerSignUp: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match.');
       return;
@@ -58,6 +62,8 @@ const OfficerSignUp: React.FC = () => {
       navigate('/login');
     } catch (err: any) {
       alert(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -191,8 +197,9 @@ const OfficerSignUp: React.FC = () => {
           <button
             type="submit"
             className="py-2 rounded-md font-semibold bg-[#1836b2] text-white hover:shadow-lg transition-all"
+            disabled={loading}
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 

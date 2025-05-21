@@ -18,21 +18,20 @@ export const signUpUser = async (
   phoneNumber: string,
   role: 'Citizen' | 'Officer',
   organization: string,
-  designation?: string // 👈 Optional designation for Officer
+  designation?: string,
+  cnic?: string
 ): Promise<void> => {
   if (password !== confirmPassword) {
     throw new Error("Passwords do not match.");
   }
 
   try {
-    // Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Set display name in Firebase Auth
     await updateProfile(user, { displayName: name });
 
-    // Build user data
+    // Base user data saved in 'users' collection
     const userData: any = {
       uid: user.uid,
       name,
@@ -41,16 +40,30 @@ export const signUpUser = async (
       createdAt: new Date().toISOString(),
     };
 
-    if (role === 'Officer') {
-      userData.phoneNumber = phoneNumber;
-      userData.organization = organization;
-      if (designation) {
-        userData.designation = designation; // ✅ Store designation separately
-      }
+    await setDoc(doc(db, "users", user.uid), userData);
+
+    // Save to citizens or officers collection
+    if (role === "Citizen") {
+      const citizenData = {
+        name,
+        email,
+      };
+      await setDoc(doc(db, "citizens", user.uid), citizenData);
     }
 
-    // Save to Firestore
-    await setDoc(doc(db, "users", user.uid), userData);
+    if (role === "Officer") {
+      const officerData = {
+        name,
+        email,
+        phone: phoneNumber,
+        cnic: cnic || "",
+        role: designation || "", // designation saved in 'role' field
+        organization,
+        profileImage: "/images/user-profile.png",
+      };
+      await setDoc(doc(db, "officers", user.uid), officerData);
+    }
+
   } catch (error: any) {
     throw new Error(error.message);
   }
@@ -128,4 +141,52 @@ export const updateCitizenProfile = async (data: any) => {
 
   const docRef = doc(db, "citizens", user.uid);
   await setDoc(docRef, data, { merge: true });
+};
+
+
+/**
+ * Get current officer's profile from 'officers' collection
+ */
+export const getOfficerProfile = async () => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User not authenticated");
+
+  const docRef = doc(db, "officers", user.uid);
+  const docSnap = await getDoc(docRef);
+
+  const authData = {
+    fullName: user.displayName || "",
+    email: user.email || "",
+  };
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    return {
+      profileImage: data.profileImage || "/images/user-profile.png",
+      ...authData,
+      ...data, // Firestore values will override auth data if they exist
+    };
+  }
+
+  return {
+    ...authData,
+    phone: "",
+    cnic: "",
+    department: "",
+    role: "",
+    organization: "",
+    profileImage: "/images/user-profile.png",
+  };
+};
+
+
+/**
+ * Update or create officer profile in 'officers' collection
+ */
+export const updateOfficerProfile = async (data: any) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User not authenticated");
+
+  const ref = doc(db, "officers", user.uid);
+  await setDoc(ref, data, { merge: true });
 };
