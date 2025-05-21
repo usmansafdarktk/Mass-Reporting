@@ -1,5 +1,5 @@
 import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword,
-  UserCredential, } from "firebase/auth";
+  UserCredential, signOut } from "firebase/auth";
 import { getFirestore, doc, setDoc,  getDoc } from "firebase/firestore";
 import { app } from "./firebaseConfig";
 
@@ -84,4 +84,48 @@ export const signInUser = async (
   } catch (error: any) {
     throw new Error(error.message);
   }
+};
+
+export const logoutUser = async () => {
+  try {
+    await signOut(auth);
+    console.log("User logged out successfully.");
+  } catch (error) {
+    console.error("Logout failed:", error);
+    throw error;
+  }
+};
+
+/**
+ * Get current user's citizen profile
+ */
+export const getCitizenProfile = async () => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User not authenticated");
+
+  const docRef = doc(db, "citizens", user.uid);
+  const docSnap = await getDoc(docRef);
+
+  const firestoreData = docSnap.exists() ? docSnap.data() : {};
+  const authData = {
+    fullName: user.displayName || "",
+    email: user.email || "",
+  };
+
+  return {
+    profileImage: "/images/user-profile.png", // fallback image
+    ...authData,
+    ...firestoreData, // will override if same fields exist
+  };
+};
+
+/**
+ * Update or create citizen profile
+ */
+export const updateCitizenProfile = async (data: any) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User not authenticated");
+
+  const docRef = doc(db, "citizens", user.uid);
+  await setDoc(docRef, data, { merge: true });
 };
