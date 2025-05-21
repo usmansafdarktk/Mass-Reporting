@@ -1,24 +1,28 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaEye, FaSyncAlt } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
 import { MdOutlineCategory } from 'react-icons/md';
-import { RiSpam2Line } from 'react-icons/ri';
 
-interface Props {
-  report: {
-    id: string;
-    title: string;
-    date: string;
-    status: string;
-    category: string;
-  };
+interface Report {
+  id: string;
+  title: string;
+  location: string;
+  date: string;
+  time: string;
+  category: string;
+  status: 'pending' | 'under review' | 'verified' | 'rejected';
+  image: string;
 }
 
-const statusColors: Record<string, string> = {
-  Pending: 'bg-yellow-400 text-yellow-900',
-  'Under Review': 'bg-blue-400 text-blue-900',
-  Verified: 'bg-green-500 text-white',
-  Rejected: 'bg-red-500 text-white',
+interface Props {
+  report: Report;
+}
+
+const statusColors: Record<Report['status'], string> = {
+  pending: 'bg-yellow-400 text-yellow-900',
+  'under review': 'bg-blue-400 text-blue-900',
+  verified: 'bg-green-500 text-white',
+  rejected: 'bg-red-500 text-white',
 };
 
 const ReportRow: React.FC<Props> = ({ report }) => {
@@ -33,23 +37,17 @@ const ReportRow: React.FC<Props> = ({ report }) => {
         <span
           className={`px-2 py-1 whitespace-nowrap rounded text-xs font-medium ${statusColors[report.status]}`}
         >
-          {report.status}
+          {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
         </span>
       </td>
       <td className="px-4 py-4">
         <div className="flex flex-wrap gap-3">
           <Link
-                to={`/officer/reports/${report.id}`}
-                className="flex items-center gap-1 text-blue-600 hover:underline text-sm"
-                >
-                <FaEye /> View
+            to={`/officer/reports/${report.id}`}
+            className="flex items-center gap-1 text-blue-600 hover:underline text-sm"
+          >
+            <FaEye /> View
           </Link>
-          <button className="flex items-center gap-1 text-gray-700 hover:underline dark:text-gray-300 text-sm">
-            <FaSyncAlt /> Status
-          </button>
-          <button className="flex items-center gap-1 text-red-500 hover:underline text-sm">
-            <RiSpam2Line /> Mark Spam
-          </button>
         </div>
       </td>
     </tr>
