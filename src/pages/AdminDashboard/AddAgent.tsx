@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { addOfficer } from "../../utils/addAgent";
 
 const AddAgent: React.FC = () => {
   const navigate = useNavigate();
@@ -10,7 +11,6 @@ const AddAgent: React.FC = () => {
     email: "",
     phone: "",
     cnic: "",
-    agentId: "",
     designation: "",
     department: "",
     profilePicture: null as File | null,
@@ -27,21 +27,38 @@ const AddAgent: React.FC = () => {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setFormData((prev) => ({
-      ...prev,
-      profilePicture: file,
-    }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+      e.preventDefault();
+      setLoading(true);
+      setMessage("");
 
-    // to be implemented
-  };
+      try {
+        await addOfficer(
+          formData.name,
+          formData.email,
+          formData.phone,
+          formData.department,   // treated as organization
+          formData.designation,
+          formData.cnic
+        );
+
+        setMessage("Officer added successfully. A password reset email has been sent.");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          cnic: "",
+          designation: "",
+          department: "",
+          profilePicture: null,
+        });
+      } catch (error: any) {
+        setMessage("Failed to add officer: " + error.message);
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
 
@@ -53,7 +70,7 @@ const AddAgent: React.FC = () => {
         <FaArrowLeft className="text-2xl text-black dark:text-white hover:opacity-80" />
       </button>
 
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-transparent px-4">
+      <div className="flex justify-center items-start min-h-screen bg-gray-100 dark:bg-transparent px-4">
       <div className="w-full max-w-4xl bg-white dark:bg-[#1e293b] dark:border dark:border-gray-600 p-8 rounded-lg dark:shadow-none shadow-[0px_0px_4px_rgba(24,54,178,1)] text-black dark:text-white">
         <h2 className="text-2xl font-semibold mb-6 text-center">Add Agent</h2>
         {message && <p className="text-center mb-4 text-green-600 dark:text-green-400">{message}</p>}
@@ -147,34 +164,6 @@ const AddAgent: React.FC = () => {
                 required
               />
             </div>
-          </div>
-
-          {/* Agent ID */}
-          <div>
-            <label htmlFor="agentId" className="block text-sm font-medium">Agent ID</label>
-            <input
-              type="text"
-              id="agentId"
-              name="agentId"
-              value={formData.agentId}
-              onChange={handleChange}
-              placeholder="e.g. AGT-001"
-              className="mt-1 block w-full px-4 py-2 border rounded-md bg-white dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
-              required
-            />
-          </div>
-
-          {/* Profile Picture */}
-          <div>
-            <label htmlFor="profilePicture" className="block text-sm font-medium">Profile Picture</label>
-            <input
-              type="file"
-              id="profilePicture"
-              name="profilePicture"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 dark:file:bg-blue-900 file:text-blue-700 dark:file:text-white hover:file:bg-blue-100"
-            />
           </div>
 
           {/* Submit Button */}
