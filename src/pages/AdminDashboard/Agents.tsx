@@ -1,53 +1,40 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import InspectorProfileCard from '../../components/InspectorProfileCard';
-import { Link } from 'react-router-dom';
+import { fetchAllAgents, getOfficerComplaintStats } from '../../utils/agentManagement';
 
-const Agents = () => {
-  const inspectors = [
-    {
-      id: "1",
-      imagePath: '/images/inspector1.jpg',
-      name: 'Inspector Jamil',
-      rank: 'Senior Inspector',
-      department: 'Traffic Police',
-      contactInfo: 'Phone: +123-456-7890 | Email: jamil@police.com',
-      bio: 'Jamil has over 10 years of experience in handling traffic complaints and enforcing road safety laws.',
-      totalComplaints: 150,
-      complaintsStatus: {
-        open: 20,
-        inProgress: 30,
-        resolved: 100,
-      },
-    },
-    { id: "2",
-      imagePath: '/images/inspector2.jpg',
-      name: 'Inspector Nasir',
-      rank: 'Inspector',
-      department: 'Criminal Investigation',
-      contactInfo: 'Phone: +987-654-3210 | Email: nasir@police.com',
-      bio: 'Nasir specializes in criminal investigations and has solved numerous high-profile cases over the years.',
-      totalComplaints: 80,
-      complaintsStatus: {
-        open: 10,
-        inProgress: 20,
-        resolved: 50,
-      },
-    },
-    { id: "3",
-      imagePath: '/images/inspector3.jpg',
-      name: 'Inspector Sarib',
-      rank: 'Assistant Inspector',
-      department: 'Cyber Crime Unit',
-      contactInfo: 'Phone: +456-789-1234 | Email: sarib@police.com',
-      bio: 'Sarib leads the fight against cybercrime, ensuring digital safety for all.',
-      totalComplaints: 60,
-      complaintsStatus: {
-        open: 5,
-        inProgress: 10,
-        resolved: 45,
-      },
-    },
-  ];
+const Agents: React.FC = () => {
+  const [agents, setAgents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAgentsWithStats = async () => {
+      try {
+        const officers = await fetchAllAgents();
+
+        // For each officer, fetch complaint stats
+        const agentsWithStats = await Promise.all(
+          officers.map(async (officer: any) => {
+            const stats = await getOfficerComplaintStats(officer.id);
+            return {
+              ...officer,
+              totalComplaints: stats.totalComplaints,
+              complaintsStatus: stats.complaintsStatus,
+            };
+          })
+        );
+
+        setAgents(agentsWithStats);
+      } catch (error) {
+        console.error('Error loading agents:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAgentsWithStats();
+  }, []);
 
   return (
     <>
@@ -62,13 +49,17 @@ const Agents = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mb-12 mx-8">
-        {inspectors.map((inspector, index) => (
-            <Link key={index} to={`/admin/agents/${inspector.id}`}>
-                <InspectorProfileCard {...inspector} />
+      {loading ? (
+        <p className="text-center text-gray-600 dark:text-gray-300">Loading agents...</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8 mb-12 mx-8">
+          {agents.map((agent) => (
+            <Link key={agent.id} to={`/admin/agents/${agent.id}`}>
+              <InspectorProfileCard {...agent} />
             </Link>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </>
   );
 };
